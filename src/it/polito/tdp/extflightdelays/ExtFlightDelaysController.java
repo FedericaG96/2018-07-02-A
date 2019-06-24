@@ -7,9 +7,12 @@
 package it.polito.tdp.extflightdelays;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.extflightdelays.model.Airport;
 import it.polito.tdp.extflightdelays.model.Model;
+import it.polito.tdp.extflightdelays.model.Rotta;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -20,6 +23,8 @@ import javafx.scene.control.TextField;
 public class ExtFlightDelaysController {
 
 	private Model model;
+	Integer distanzaMin = null;
+	Airport aeroporto = null;
 
     @FXML // ResourceBundle that was given to the FXMLLoader
     private ResourceBundle resources;
@@ -37,7 +42,7 @@ public class ExtFlightDelaysController {
     private Button btnAnalizza; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbBoxAeroportoPartenza"
-    private ComboBox<?> cmbBoxAeroportoPartenza; // Value injected by FXMLLoader
+    private ComboBox<Airport> cmbBoxAeroportoPartenza; // Value injected by FXMLLoader
 
     @FXML // fx:id="btnAeroportiConnessi"
     private Button btnAeroportiConnessi; // Value injected by FXMLLoader
@@ -50,17 +55,55 @@ public class ExtFlightDelaysController {
 
     @FXML
     void doAnalizzaAeroporti(ActionEvent event) {
+    	try {
+    		distanzaMin = Integer.parseInt(distanzaMinima.getText());
+    	}catch(NumberFormatException e ) {
+    		txtResult.setText("Inserire numero intero!");
+    		return;
+    	}
+    	
+    	model.creaGrafo(distanzaMin);
+    	txtResult.setText("Grafo creato\n");
+    	txtResult.appendText("Archi "+ model.getGrafoArchi());
 
     }
 
     @FXML
     void doCalcolaAeroportiConnessi(ActionEvent event) {
-
+    	txtResult.clear();
+    	aeroporto = cmbBoxAeroportoPartenza.getValue();
+    	if(aeroporto== null) {
+    		txtResult.setText("Selezionare un aeroporto");
+    		return;
+    	}
+    	txtResult.clear();
+    	List<Rotta> connessi = model.getConnessi(aeroporto);
+    	if(connessi.size() == 0) {
+    		txtResult.setText("Aeroporto non collegato ad altri aeroporti tramite voli con distanza di almeno "+distanzaMin);
+    		return;
+    	}
+    	for(Rotta r : connessi) {
+    		txtResult.appendText(r.getDestination().toString()+" "+ r.getDistanza()+"\n");
+    	}
     }
 
     @FXML
     void doCercaItinerario(ActionEvent event) {
-
+    	txtResult.clear();
+    	Double migliaMax = null;
+    	try {
+    		migliaMax = Double.parseDouble(numeroVoliTxtInput.getText());
+    	}catch(NumberFormatException e ) {
+    		txtResult.setText("Inserire numero intero!");
+    		return;
+    	}
+    	
+    	txtResult.clear();
+    	List<Airport> percorso = model.getPercorso(migliaMax, aeroporto);
+    	for(Airport a : percorso) {
+    		txtResult.appendText(a.toString()+"\n");
+    	}
+    	txtResult.appendText("Distanza percorsa "+ model.getDistanzaPercorsa());
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -77,7 +120,7 @@ public class ExtFlightDelaysController {
     
     public void setModel(Model model) {
 		this.model = model;
-		
+		cmbBoxAeroportoPartenza.getItems().addAll(model.getAeroporti());
 	}
 }
 
