@@ -64,6 +64,7 @@ public class Model {
 		return airports;
 	}
 
+	//Sbagliato questo metodo
 	public List<Rotta> getConnessi(Airport a) {
 		List<Rotta> connessi= new ArrayList<>();
 		
@@ -71,6 +72,7 @@ public class Model {
 			if(r.getSource().equals(a)) {
 				connessi.add(r);
 			}
+			
 		}
 		Collections.sort(connessi);
 		return connessi;
