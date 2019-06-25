@@ -13,6 +13,7 @@ import java.util.ResourceBundle;
 import it.polito.tdp.extflightdelays.model.Airport;
 import it.polito.tdp.extflightdelays.model.Model;
 import it.polito.tdp.extflightdelays.model.Rotta;
+import it.polito.tdp.extflightdelays.model.Vicino;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -77,13 +78,13 @@ public class ExtFlightDelaysController {
     		return;
     	}
     	txtResult.clear();
-    	List<Rotta> connessi = model.getConnessi(aeroporto);
+    	List<Vicino> connessi = model.getConnessi(aeroporto);
     	if(connessi.size() == 0) {
     		txtResult.setText("Aeroporto non collegato ad altri aeroporti tramite voli con distanza di almeno "+distanzaMin);
     		return;
     	}
-    	for(Rotta r : connessi) {
-    		txtResult.appendText(r.getDestination().toString()+" "+ r.getDistanza()+"\n");
+    	for(Vicino a : connessi) {
+    		txtResult.appendText(a.getVicino()+" "+a.getDistanza()+"\n");
     	}
     }
 

@@ -64,18 +64,16 @@ public class Model {
 		return airports;
 	}
 
-	//Sbagliato questo metodo
-	public List<Rotta> getConnessi(Airport a) {
-		List<Rotta> connessi= new ArrayList<>();
-		
-		for(Rotta r : rotte) {
-			if(r.getSource().equals(a)) {
-				connessi.add(r);
-			}
-			
+	
+	public List<Vicino> getConnessi(Airport aeroporto) {
+		List<Airport> connessi = new ArrayList<>(Graphs.neighborListOf(grafo, aeroporto));
+		List<Vicino> result = new ArrayList<>();
+		for(Airport a : connessi) {
+			result.add(new Vicino( a, grafo.getEdgeWeight(grafo.getEdge(aeroporto, a))));
 		}
-		Collections.sort(connessi);
-		return connessi;
+		
+		Collections.sort(result);
+		return result;
 	}
 
 	public List<Airport> getPercorso(Double migliaMax, Airport aeroporto) {
